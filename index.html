@@ -423,6 +423,20 @@
         </select>
         <input type="text" id="country-other" name="country-other" placeholder="Your country" class="hidden-field">
 
+        <label for="group-size" class="visually-hidden" style="position:absolute;left:-9999px;">Number of people interested</label>
+        <select id="group-size" name="group-size">
+          <option value="" disabled selected>People interested (inc. you)</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+
         <div class="field-row">
           <label for="season-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Season preference</label>
           <select id="season-pref" name="season-pref" required>
@@ -504,6 +518,7 @@
     const country = countrySelect.value === 'other'
       ? countryOther.value.trim()
       : countrySelect.value;
+    const groupSize = document.getElementById('group-size').value;
     const season = document.getElementById('season-pref').value;
     const genre = genreSelect.value === 'other'
       ? genreOther.value.trim()
@@ -529,7 +544,7 @@
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, country, season, genre, consent })
+        body: JSON.stringify({ name, email, country, groupSize, season, genre, consent })
       });
       const data = await res.json();
       if (!res.ok) {

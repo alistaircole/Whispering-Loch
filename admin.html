@@ -115,6 +115,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Country</th>
+          <th>Group</th>
           <th>Season</th>
           <th>Genre</th>
           <th>Consent</th>
@@ -164,6 +165,7 @@
         <td>${escapeHtml(e.name || '—')}</td>
         <td>${escapeHtml(e.email)}</td>
         <td>${escapeHtml(e.country || '—')}</td>
+        <td>${e.group_size || '—'}</td>
         <td>${escapeHtml(e.season_pref || '—')}</td>
         <td>${escapeHtml(e.genre_pref || '—')}</td>
         <td>${e.marketing_consent ? 'Yes' : 'No'}</td>
@@ -185,9 +187,9 @@
   }
 
   function exportCsv() {
-    const headers = ['Date', 'Name', 'Email', 'Country', 'Season', 'Genre', 'Consent'];
+    const headers = ['Date', 'Name', 'Email', 'Country', 'Group Size', 'Season', 'Genre', 'Consent'];
     const rows = currentEntries.map(e => [
-      e.created_at, e.name || '', e.email, e.country || '', e.season_pref || '', e.genre_pref || '', e.marketing_consent ? 'Yes' : 'No'
+      e.created_at, e.name || '', e.email, e.country || '', e.group_size || '', e.season_pref || '', e.genre_pref || '', e.marketing_consent ? 'Yes' : 'No'
     ]);
     const csv = [headers, ...rows]
       .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
