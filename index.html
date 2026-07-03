@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Whispering Loch — A book retreat for women, Scotland</title>
 <meta name="description" content="A five-day book retreat for women in Scotland. Lochs, hikes, chef-made meals, and books worth talking about. Coming spring & summer 2027.">
-<link rel="icon" type="image/jpeg" href="Images/logo.jpeg?v=2">
+<link rel="icon" type="image/jpeg" href="Images/logo.jpeg?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
       radial-gradient(ellipse 70% 40% at 80% 30%, rgba(166, 136, 172, 0.2), transparent 55%),
       radial-gradient(ellipse 90% 60% at 50% 85%, rgba(15, 32, 39, 0.75), transparent 65%),
       linear-gradient(180deg, rgba(8, 20, 24, 0.55) 0%, rgba(8, 20, 24, 0.88) 100%),
-      url('Images/hero-glen.jpeg?v=2');
+      url('Images/hero-glen.jpeg?v=3');
     background-size: cover, cover, cover, cover, cover;
     background-position: center, center, center, center, center 62%;
     animation: drift 28s ease-in-out infinite alternate;
@@ -78,10 +78,12 @@
 
   .hero-logo {
     display: block;
-    width: min(220px, 55vw);
+    width: 130px;
+    max-width: 40vw;
     height: auto;
-    margin: 0 auto 1.5rem;
-    filter: drop-shadow(0 4px 24px rgba(0,0,0,0.35));
+    object-fit: contain;
+    margin: 0 auto 1.25rem;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,0.35));
   }
 
   .logo-mark span {
@@ -205,6 +207,24 @@
   select option {
     background: var(--loch-deep);
     color: var(--parchment);
+  }
+
+  .consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    line-height: 1.5;
+    color: var(--parchment-dim);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .consent-label input[type="checkbox"] {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    accent-color: var(--gold);
   }
 
   input[type="email"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
@@ -345,7 +365,7 @@
 
   <main>
     <div class="hero">
-      <img class="hero-logo" src="Images/logo.jpeg?v=2" alt="The Whispering Loch — luxury book retreat">
+      <img class="hero-logo" src="Images/logo.jpeg?v=3" alt="The Whispering Loch — luxury book retreat">
       <p class="eyebrow">A book retreat for women</p>
       <h1>Five days in the Highlands, <em>with a book in hand.</em></h1>
       <p class="sub">
@@ -353,8 +373,14 @@
       </p>
 
       <form id="interest-form" novalidate>
+        <label for="name" class="visually-hidden" style="position:absolute;left:-9999px;">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name">
+
         <label for="email" class="visually-hidden" style="position:absolute;left:-9999px;">Email address</label>
         <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+        <label for="country" class="visually-hidden" style="position:absolute;left:-9999px;">Country</label>
+        <input type="text" id="country" name="country" placeholder="Country" autocomplete="country-name">
 
         <div class="field-row">
           <label for="season-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Season preference</label>
@@ -377,6 +403,11 @@
           </select>
         </div>
 
+        <label class="consent-label">
+          <input type="checkbox" id="consent" name="consent" required>
+          <span>I'd like to receive updates about Whispering Loch by email.</span>
+        </label>
+
         <button type="submit">Register interest</button>
       </form>
       <p class="status" id="form-status" role="status" aria-live="polite"></p>
@@ -389,15 +420,15 @@
     <p class="gallery-label">Scotland, in brief</p>
     <div class="gallery-grid">
       <figure class="gallery-item">
-        <img src="Images/gallery-castle.jpeg?v=2" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
+        <img src="Images/gallery-castle.jpeg?v=3" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
         <figcaption>Highland strongholds</figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="Images/hero-glen.jpeg?v=2" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
+        <img src="Images/hero-glen.jpeg?v=3" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
         <figcaption>Glens at first light</figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="Images/gallery-viaduct.jpeg?v=2" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
+        <img src="Images/gallery-viaduct.jpeg?v=3" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
         <figcaption>Journeys through the hills</figcaption>
       </figure>
     </div>
@@ -409,18 +440,17 @@
 </div>
 
 <script>
-  // NOTE FOR SITE OWNER:
-  // This form currently just confirms locally — it does not send emails anywhere yet.
-  // Before launch, connect it to a real list (Formspree, Mailchimp, ConvertKit, Buttondown, etc.)
-  // by pointing the fetch call below at that service's endpoint, or swapping in their embed code.
   const form = document.getElementById('interest-form');
   const status = document.getElementById('form-status');
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
+    const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
+    const country = document.getElementById('country').value.trim();
     const season = document.getElementById('season-pref').value;
     const genre = document.getElementById('genre-pref').value;
+    const consent = document.getElementById('consent').checked;
     const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     if (!validEmail) {
@@ -431,10 +461,28 @@
       status.textContent = 'Please choose a season and genre preference.';
       return;
     }
+    if (!consent) {
+      status.textContent = 'Please confirm you\'re happy to be contacted.';
+      return;
+    }
 
-    // Placeholder for real submission — replace with your email service call.
-    status.textContent = 'Thank you — we\'ll be in touch before booking opens.';
-    form.reset();
+    status.textContent = 'Sending…';
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, country, season, genre, consent })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        status.textContent = data.error || 'Something went wrong. Please try again.';
+        return;
+      }
+      status.textContent = 'Thank you — we\'ll be in touch before booking opens.';
+      form.reset();
+    } catch (err) {
+      status.textContent = 'Could not connect. Please try again.';
+    }
   });
 </script>
 

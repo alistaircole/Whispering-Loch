@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispering Loch — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Spectral:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --loch: #0f2027;
+    --loch-deep: #081418;
+    --parchment: #e8e1d3;
+    --parchment-dim: #c7bfae;
+    --gold: #c9a227;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--loch);
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+  h1 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin: 0 0 1.25rem;
+  }
+  .login-box {
+    max-width: 320px;
+    margin: 4rem auto;
+    text-align: center;
+  }
+  input[type="password"] {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(232,225,211,0.35);
+    border-radius: 2px;
+    padding: 0.75rem 0.9rem;
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  button {
+    background: var(--gold);
+    color: var(--loch-deep);
+    border: none;
+    border-radius: 2px;
+    padding: 0.7rem 1.4rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--parchment-dim);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.6rem 0.7rem;
+    border-bottom: 1px solid rgba(232,225,211,0.15);
+    white-space: nowrap;
+  }
+  th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .table-wrap { overflow-x: auto; }
+  .status { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--parchment-dim); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div id="login" class="login-box">
+  <h1>Whispering Loch — Admin</h1>
+  <input type="password" id="password" placeholder="Admin password">
+  <button id="login-btn">View entries</button>
+  <p class="status" id="login-status"></p>
+</div>
+
+<div id="dashboard" class="hidden">
+  <h1>Registered interest</h1>
+  <div class="toolbar">
+    <span class="count" id="count"></span>
+    <button id="export-btn">Export CSV</button>
+  </div>
+  <div class="table-wrap">
+    <table id="entries-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Country</th>
+          <th>Season</th>
+          <th>Genre</th>
+          <th>Consent</th>
+        </tr>
+      </thead>
+      <tbody id="entries-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const loginBox = document.getElementById('login');
+  const dashboard = document.getElementById('dashboard');
+  const loginStatus = document.getElementById('login-status');
+  const passwordInput = document.getElementById('password');
+  let currentEntries = [];
+
+  async function loadEntries(password) {
+    loginStatus.textContent = 'Checking…';
+    try {
+      const res = await fetch('/api/entries', {
+        headers: { 'x-admin-password': password }
+      });
+      if (res.status === 401) {
+        loginStatus.textContent = 'Incorrect password.';
+        return;
+      }
+      const data = await res.json();
+      currentEntries = data.entries || [];
+      renderEntries(currentEntries);
+      localStorage.setItem('wl-admin-pw', password);
+      loginBox.classList.add('hidden');
+      dashboard.classList.remove('hidden');
+    } catch (err) {
+      loginStatus.textContent = 'Could not connect. Please try again.';
+    }
+  }
+
+  function renderEntries(entries) {
+    document.getElementById('count').textContent = entries.length + ' registered';
+    const body = document.getElementById('entries-body');
+    body.innerHTML = '';
+    entries.forEach(e => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${formatDate(e.created_at)}</td>
+        <td>${escapeHtml(e.name || '—')}</td>
+        <td>${escapeHtml(e.email)}</td>
+        <td>${escapeHtml(e.country || '—')}</td>
+        <td>${escapeHtml(e.season_pref || '—')}</td>
+        <td>${escapeHtml(e.genre_pref || '—')}</td>
+        <td>${e.marketing_consent ? 'Yes' : 'No'}</td>
+      `;
+      body.appendChild(row);
+    });
+  }
+
+  function formatDate(str) {
+    if (!str) return '—';
+    const d = new Date(str + 'Z');
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function exportCsv() {
+    const headers = ['Date', 'Name', 'Email', 'Country', 'Season', 'Genre', 'Consent'];
+    const rows = currentEntries.map(e => [
+      e.created_at, e.name || '', e.email, e.country || '', e.season_pref || '', e.genre_pref || '', e.marketing_consent ? 'Yes' : 'No'
+    ]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'whispering-loch-registrations.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById('login-btn').addEventListener('click', () => {
+    const pw = passwordInput.value.trim();
+    if (pw) loadEntries(pw);
+  });
+  passwordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  });
+  document.getElementById('export-btn').addEventListener('click', exportCsv);
+
+  // Auto-login if password remembered on this device
+  const savedPw = localStorage.getItem('wl-admin-pw');
+  if (savedPw) {
+    passwordInput.value = savedPw;
+    loadEntries(savedPw);
+  }
+</script>
+
+</body>
+</html>
