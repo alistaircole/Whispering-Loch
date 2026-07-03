@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
   const email = (body.email || "").trim().slice(0, 200);
   const country = (body.country || "").trim().slice(0, 200);
   const season = (body.season || "").trim().slice(0, 50);
-  const genre = (body.genre || "").trim().slice(0, 50);
+  const genre = (body.genre || "").trim().slice(0, 200);
   const consent = body.consent ? 1 : 0;
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
