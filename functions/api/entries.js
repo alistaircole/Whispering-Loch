@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
 
   try {
     const { results } = await env.DB.prepare(
-      `SELECT id, name, email, country, season_pref, genre_pref, marketing_consent, created_at
+      `SELECT id, name, email, country, group_size, season_pref, genre_pref, marketing_consent, created_at
        FROM registrations ORDER BY created_at DESC`
     ).all();
 

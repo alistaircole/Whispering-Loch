@@ -17,6 +17,8 @@ export async function onRequestPost(context) {
   const country = (body.country || "").trim().slice(0, 200);
   const season = (body.season || "").trim().slice(0, 50);
   const genre = (body.genre || "").trim().slice(0, 200);
+  const groupSizeRaw = parseInt(body.groupSize, 10);
+  const groupSize = Number.isInteger(groupSizeRaw) && groupSizeRaw >= 1 && groupSizeRaw <= 9 ? groupSizeRaw : null;
   const consent = body.consent ? 1 : 0;
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,10 +34,10 @@ export async function onRequestPost(context) {
 
   try {
     await env.DB.prepare(
-      `INSERT INTO registrations (name, email, country, season_pref, genre_pref, marketing_consent)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO registrations (name, email, country, group_size, season_pref, genre_pref, marketing_consent)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
     )
-      .bind(name, email, country, season, genre, consent)
+      .bind(name, email, country, groupSize, season, genre, consent)
       .run();
   } catch (err) {
     return json({ error: "Something went wrong saving your details. Please try again." }, 500);
