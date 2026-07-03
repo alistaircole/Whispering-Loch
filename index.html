@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Whispering Loch — A book retreat for women, Scotland</title>
 <meta name="description" content="A five-day book retreat for women in Scotland. Lochs, hikes, chef-made meals, and books worth talking about. Coming spring & summer 2027.">
-<link rel="icon" type="image/jpeg" href="images/logo.jpg">
+<link rel="icon" type="image/jpeg" href="images/logo.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -156,24 +156,61 @@
 
   form {
     display: flex;
-    gap: 0.6rem;
-    max-width: 420px;
+    flex-direction: column;
+    gap: 0.7rem;
+    max-width: 300px;
     margin: 0 auto;
-    flex-wrap: wrap;
-    justify-content: center;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 0.6rem;
   }
 
   input[type="email"] {
-    flex: 1 1 240px;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
     background: transparent;
     border: 1px solid rgba(232, 225, 211, 0.35);
     border-radius: 2px;
-    padding: 0.85rem 1.1rem;
+    padding: 0.75rem 0.9rem;
     color: var(--parchment);
     font-family: 'Spectral', serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
     outline: none;
     transition: border-color 0.25s ease;
+  }
+
+  select {
+    flex: 1 1 0;
+    background: var(--loch-deep);
+    border: 1px solid rgba(232, 225, 211, 0.35);
+    border-radius: 2px;
+    padding: 0.7rem 0.6rem;
+    color: var(--parchment);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    outline: none;
+    transition: border-color 0.25s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%), linear-gradient(135deg, var(--gold) 50%, transparent 50%);
+    background-position: calc(100% - 14px) center, calc(100% - 9px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  select:focus-visible,
+  input[type="email"]:focus-visible {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+  }
+
+  select option {
+    background: var(--loch-deep);
+    color: var(--parchment);
   }
 
   input[type="email"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
@@ -184,12 +221,12 @@
   }
 
   button {
-    flex: 0 0 auto;
+    width: 100%;
     background: var(--gold);
     color: var(--loch-deep);
     border: none;
     border-radius: 2px;
-    padding: 0.85rem 1.6rem;
+    padding: 0.8rem 1.4rem;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.78rem;
     letter-spacing: 0.1em;
@@ -295,9 +332,8 @@
     color: rgba(199, 191, 174, 0.55);
   }
 
-  @media (max-width: 480px) {
-    form { flex-direction: column; }
-    button { width: 100%; }
+  @media (max-width: 380px) {
+    .field-row { flex-direction: column; }
   }
 </style>
 </head>
@@ -308,7 +344,7 @@
 <div class="wrap">
   <header>
     <span class="logo-mark">
-      <img src="images/logo.jpg" alt="The Whispering Loch">
+      <img src="images/logo.jpeg" alt="The Whispering Loch">
       <span>Whispering Loch</span>
     </span>
     <span class="mark">Scotland</span>
@@ -319,17 +355,39 @@
       <p class="eyebrow">A book retreat for women</p>
       <h1>Five days in the Highlands, <em>with a book in hand.</em></h1>
       <p class="sub">
-        A small, chef-catered retreat in Scotland — reading circles, loch hikes and excursions, and a house full of women who understand why both matter. Coming spring &amp; summer 2027.
+        A small, chef-catered retreat in Scotland — reading circles, loch hikes and excursions, and a house full of women who understand why both matter.
       </p>
 
       <form id="interest-form" novalidate>
         <label for="email" class="visually-hidden" style="position:absolute;left:-9999px;">Email address</label>
         <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+        <div class="field-row">
+          <label for="season-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Season preference</label>
+          <select id="season-pref" name="season-pref" required>
+            <option value="" disabled selected>Preferred season</option>
+            <option value="autumn-2026">Autumn 2026 (Oct/Nov)</option>
+            <option value="spring-2027">Spring 2027</option>
+            <option value="summer-2027">Summer 2027</option>
+            <option value="flexible">Flexible / any</option>
+          </select>
+
+          <label for="genre-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Favourite genre</label>
+          <select id="genre-pref" name="genre-pref" required>
+            <option value="" disabled selected>Favourite genre</option>
+            <option value="fantasy-romance">Fantasy &amp; romance</option>
+            <option value="literary">Literary fiction</option>
+            <option value="gothic-mystery">Gothic &amp; mystery</option>
+            <option value="memoir">Memoir &amp; nonfiction</option>
+            <option value="mixed">Mixed / no preference</option>
+          </select>
+        </div>
+
         <button type="submit">Register interest</button>
       </form>
       <p class="status" id="form-status" role="status" aria-live="polite"></p>
 
-      <p class="season">Spring &amp; Summer 2027 · Scotland</p>
+      <p class="season">Autumn 2026 · Spring &amp; Summer 2027 · Scotland</p>
     </div>
   </main>
 
@@ -367,10 +425,16 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     const email = document.getElementById('email').value.trim();
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const season = document.getElementById('season-pref').value;
+    const genre = document.getElementById('genre-pref').value;
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    if (!valid) {
+    if (!validEmail) {
       status.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    if (!season || !genre) {
+      status.textContent = 'Please choose a season and genre preference.';
       return;
     }
 
