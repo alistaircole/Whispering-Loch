@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispering Loch — A book retreat for women, Scotland</title>
+<meta name="description" content="A five-day book retreat for women in Scotland. Lochs, hikes, chef-made meals, and books worth talking about. Coming spring & summer 2027.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --loch: #0f2027;
+    --loch-deep: #081418;
+    --mist: #3e5c58;
+    --mist-soft: #5c7a72;
+    --parchment: #e8e1d3;
+    --parchment-dim: #c7bfae;
+    --heather: #a688ac;
+    --gold: #c9a227;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--loch);
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ambient mist signature element, layered over the hero photograph */
+  .mist-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(92, 122, 114, 0.45), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 80% 30%, rgba(166, 136, 172, 0.2), transparent 55%),
+      radial-gradient(ellipse 90% 60% at 50% 85%, rgba(15, 32, 39, 0.75), transparent 65%),
+      linear-gradient(180deg, rgba(8, 20, 24, 0.55) 0%, rgba(8, 20, 24, 0.88) 100%),
+      url('images/hero-glen.jpg');
+    background-size: cover, cover, cover, cover, cover;
+    background-position: center, center, center, center, center 62%;
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0%   { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; filter: brightness(1); }
+    50%  { background-position: 4% 6%, -3% 4%, 2% -4%, 0% 0%; filter: brightness(1.06); }
+    100% { background-position: -3% -2%, 5% -3%, -2% 5%, 0% 0%; filter: brightness(0.98); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mist-field { animation: none; }
+    * { scroll-behavior: auto !important; animation-duration: 0.01ms !important; }
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 2rem clamp(1.25rem, 5vw, 3rem) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mark {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem clamp(1.25rem, 5vw, 3rem) 3rem;
+  }
+
+  .hero {
+    max-width: 640px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 1.75rem;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.4rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--mist-soft);
+    filter: brightness(1.6);
+  }
+
+  .sub {
+    font-size: clamp(1.02rem, 2.2vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--parchment-dim);
+    font-weight: 300;
+    margin: 0 auto 2.75rem;
+    max-width: 480px;
+  }
+
+  form {
+    display: flex;
+    gap: 0.6rem;
+    max-width: 420px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  input[type="email"] {
+    flex: 1 1 240px;
+    background: transparent;
+    border: 1px solid rgba(232, 225, 211, 0.35);
+    border-radius: 2px;
+    padding: 0.85rem 1.1rem;
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.25s ease;
+  }
+
+  input[type="email"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
+
+  input[type="email"]:focus-visible {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+  }
+
+  button {
+    flex: 0 0 auto;
+    background: var(--gold);
+    color: var(--loch-deep);
+    border: none;
+    border-radius: 2px;
+    padding: 0.85rem 1.6rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+
+  button:hover { background: #ddb539; }
+  button:active { transform: translateY(1px); }
+
+  button:focus-visible {
+    outline: 2px solid var(--parchment);
+    outline-offset: 3px;
+  }
+
+  .status {
+    margin-top: 1.1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    min-height: 1.2em;
+    color: var(--mist-soft);
+    filter: brightness(1.6);
+  }
+
+  .season {
+    margin-top: 3rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+  }
+
+  .gallery {
+    position: relative;
+    z-index: 1;
+    padding: 0 clamp(1.25rem, 5vw, 3rem) 4rem;
+  }
+
+  .gallery-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+    text-align: center;
+    margin: 0 0 1.5rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.92) brightness(0.95);
+    transition: transform 0.6s ease, filter 0.6s ease;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.04);
+    filter: saturate(1) brightness(1);
+  }
+
+  .gallery-item figcaption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 0.9rem 0.9rem 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    color: var(--parchment);
+    background: linear-gradient(0deg, rgba(8,20,24,0.85) 0%, transparent 100%);
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+    .gallery-item { aspect-ratio: 16 / 10; }
+  }
+
+  footer {
+    padding: 1.75rem clamp(1.25rem, 5vw, 3rem) 2.25rem;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: rgba(199, 191, 174, 0.55);
+  }
+
+  @media (max-width: 480px) {
+    form { flex-direction: column; }
+    button { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mist-field" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <span class="mark">Whispering Loch</span>
+    <span class="mark">Scotland</span>
+  </header>
+
+  <main>
+    <div class="hero">
+      <p class="eyebrow">A book retreat for women</p>
+      <h1>Five days in the Highlands, <em>with a book in hand.</em></h1>
+      <p class="sub">
+        A small, chef-catered retreat in Scotland — reading circles, loch hikes and excursions, and a house full of women who understand why both matter. Coming spring &amp; summer 2027.
+      </p>
+
+      <form id="interest-form" novalidate>
+        <label for="email" class="visually-hidden" style="position:absolute;left:-9999px;">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <button type="submit">Register interest</button>
+      </form>
+      <p class="status" id="form-status" role="status" aria-live="polite"></p>
+
+      <p class="season">Spring &amp; Summer 2027 · Scotland</p>
+    </div>
+  </main>
+
+  <section class="gallery" aria-label="Scotland, in brief">
+    <p class="gallery-label">Scotland, in brief</p>
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <img src="images/gallery-castle.jpg" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
+        <figcaption>Highland strongholds</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="images/hero-glen.jpg" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
+        <figcaption>Glens at first light</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="images/gallery-viaduct.jpg" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
+        <figcaption>Journeys through the hills</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Whispering Loch · whisperingloch.com
+  </footer>
+</div>
+
+<script>
+  // NOTE FOR SITE OWNER:
+  // This form currently just confirms locally — it does not send emails anywhere yet.
+  // Before launch, connect it to a real list (Formspree, Mailchimp, ConvertKit, Buttondown, etc.)
+  // by pointing the fetch call below at that service's endpoint, or swapping in their embed code.
+  const form = document.getElementById('interest-form');
+  const status = document.getElementById('form-status');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!valid) {
+      status.textContent = 'Please enter a valid email address.';
+      return;
+    }
+
+    // Placeholder for real submission — replace with your email service call.
+    status.textContent = 'Thank you — we\'ll be in touch before booking opens.';
+    form.reset();
+  });
+</script>
+
+</body>
+</html>
