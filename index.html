@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Whispering Loch — A book retreat for women, Scotland</title>
 <meta name="description" content="A five-day book retreat for women in Scotland. Lochs, hikes, chef-made meals, and books worth talking about. Coming spring & summer 2027.">
-<link rel="icon" type="image/jpeg" href="Images/logo.jpeg">
+<link rel="icon" type="image/jpeg" href="Images/logo.jpeg?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
       radial-gradient(ellipse 70% 40% at 80% 30%, rgba(166, 136, 172, 0.2), transparent 55%),
       radial-gradient(ellipse 90% 60% at 50% 85%, rgba(15, 32, 39, 0.75), transparent 65%),
       linear-gradient(180deg, rgba(8, 20, 24, 0.55) 0%, rgba(8, 20, 24, 0.88) 100%),
-      url('Images/hero-glen.jpeg');
+      url('Images/hero-glen.jpeg?v=2');
     background-size: cover, cover, cover, cover, cover;
     background-position: center, center, center, center, center 62%;
     animation: drift 28s ease-in-out infinite alternate;
@@ -76,18 +76,12 @@
     align-items: center;
   }
 
-  .logo-mark {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  .logo-mark img {
-    height: 52px;
-    width: 52px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 0 0 1px rgba(232, 225, 211, 0.25);
+  .hero-logo {
+    display: block;
+    width: min(220px, 55vw);
+    height: auto;
+    margin: 0 auto 1.5rem;
+    filter: drop-shadow(0 4px 24px rgba(0,0,0,0.35));
   }
 
   .logo-mark span {
@@ -344,7 +338,7 @@
 <div class="wrap">
   <header>
     <span class="logo-mark">
-      <img src="Images/logo.jpeg" alt="The Whispering Loch">
+      <img src="Images/logo.jpeg?v=2" alt="The Whispering Loch">
       <span>Whispering Loch</span>
     </span>
     <span class="mark">Scotland</span>
@@ -395,15 +389,15 @@
     <p class="gallery-label">Scotland, in brief</p>
     <div class="gallery-grid">
       <figure class="gallery-item">
-        <img src="Images/gallery-castle.jpeg" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
+        <img src="Images/gallery-castle.jpeg?v=2" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
         <figcaption>Highland strongholds</figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="Images/hero-glen.jpeg" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
+        <img src="Images/hero-glen.jpeg?v=2" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
         <figcaption>Glens at first light</figcaption>
       </figure>
       <figure class="gallery-item">
-        <img src="Images/gallery-viaduct.jpeg" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
+        <img src="Images/gallery-viaduct.jpeg?v=2" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
         <figcaption>Journeys through the hills</figcaption>
       </figure>
     </div>
