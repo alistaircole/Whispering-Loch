@@ -163,10 +163,12 @@
     gap: 0.6rem;
   }
 
-  input[type="email"] {
+  input[type="email"],
+  input[type="text"] {
     width: 100%;
     max-width: 220px;
     margin: 0 auto;
+    display: block;
     background: transparent;
     border: 1px solid rgba(232, 225, 211, 0.35);
     border-radius: 2px;
@@ -180,6 +182,9 @@
 
   select {
     flex: 1 1 0;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
     background: var(--loch-deep);
     border: 1px solid rgba(232, 225, 211, 0.35);
     border-radius: 2px;
@@ -198,8 +203,13 @@
     background-repeat: no-repeat;
   }
 
+  #country {
+    flex: none;
+  }
+
   select:focus-visible,
-  input[type="email"]:focus-visible {
+  input[type="email"]:focus-visible,
+  input[type="text"]:focus-visible {
     border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
   }
@@ -227,11 +237,11 @@
     accent-color: var(--gold);
   }
 
-  input[type="email"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
+  input[type="email"]::placeholder,
+  input[type="text"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
 
-  input[type="email"]:focus-visible {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+  .hidden-field {
+    display: none !important;
   }
 
   button {
@@ -380,7 +390,38 @@
         <input type="email" id="email" name="email" placeholder="you@example.com" required>
 
         <label for="country" class="visually-hidden" style="position:absolute;left:-9999px;">Country</label>
-        <input type="text" id="country" name="country" placeholder="Country" autocomplete="country-name">
+        <select id="country" name="country">
+          <option value="" disabled selected>Country</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="United States">United States</option>
+          <option value="Canada">Canada</option>
+          <option value="Ireland">Ireland</option>
+          <option value="Australia">Australia</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="France">France</option>
+          <option value="Germany">Germany</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Spain">Spain</option>
+          <option value="Italy">Italy</option>
+          <option value="Portugal">Portugal</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Norway">Norway</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Finland">Finland</option>
+          <option value="Austria">Austria</option>
+          <option value="Poland">Poland</option>
+          <option value="Czech Republic">Czech Republic</option>
+          <option value="Greece">Greece</option>
+          <option value="United Arab Emirates">United Arab Emirates</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Hong Kong">Hong Kong</option>
+          <option value="Japan">Japan</option>
+          <option value="South Africa">South Africa</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="text" id="country-other" name="country-other" placeholder="Your country" class="hidden-field">
 
         <div class="field-row">
           <label for="season-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Season preference</label>
@@ -400,8 +441,10 @@
             <option value="gothic-mystery">Gothic &amp; mystery</option>
             <option value="memoir">Memoir &amp; nonfiction</option>
             <option value="mixed">Mixed / no preference</option>
+            <option value="other">Other</option>
           </select>
         </div>
+        <input type="text" id="genre-other" name="genre-other" placeholder="Tell us your genre" class="hidden-field">
 
         <label class="consent-label">
           <input type="checkbox" id="consent" name="consent" required>
@@ -442,14 +485,29 @@
 <script>
   const form = document.getElementById('interest-form');
   const status = document.getElementById('form-status');
+  const countrySelect = document.getElementById('country');
+  const countryOther = document.getElementById('country-other');
+  const genreSelect = document.getElementById('genre-pref');
+  const genreOther = document.getElementById('genre-other');
+
+  countrySelect.addEventListener('change', function () {
+    countryOther.classList.toggle('hidden-field', this.value !== 'other');
+  });
+  genreSelect.addEventListener('change', function () {
+    genreOther.classList.toggle('hidden-field', this.value !== 'other');
+  });
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
-    const country = document.getElementById('country').value.trim();
+    const country = countrySelect.value === 'other'
+      ? countryOther.value.trim()
+      : countrySelect.value;
     const season = document.getElementById('season-pref').value;
-    const genre = document.getElementById('genre-pref').value;
+    const genre = genreSelect.value === 'other'
+      ? genreOther.value.trim()
+      : genreSelect.value;
     const consent = document.getElementById('consent').checked;
     const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -480,6 +538,8 @@
       }
       status.textContent = 'Thank you — we\'ll be in touch before booking opens.';
       form.reset();
+      countryOther.classList.add('hidden-field');
+      genreOther.classList.add('hidden-field');
     } catch (err) {
       status.textContent = 'Could not connect. Please try again.';
     }
