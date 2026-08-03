@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispering Loch — A book retreat for women, Scotland</title>
+<meta name="description" content="A five-day book retreat for women in Scotland. Lochs, hikes, chef-made meals, and books worth talking about. Coming spring & summer 2027.">
+<link rel="icon" type="image/jpeg" href="Images/logo.jpeg?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --loch: #0f2027;
+    --loch-deep: #081418;
+    --mist: #3e5c58;
+    --mist-soft: #5c7a72;
+    --parchment: #e8e1d3;
+    --parchment-dim: #c7bfae;
+    --heather: #a688ac;
+    --gold: #c9a227;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--loch);
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ambient mist signature element, layered over the hero photograph */
+  .mist-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(92, 122, 114, 0.45), transparent 60%),
+      radial-gradient(ellipse 70% 40% at 80% 30%, rgba(166, 136, 172, 0.2), transparent 55%),
+      radial-gradient(ellipse 90% 60% at 50% 85%, rgba(15, 32, 39, 0.75), transparent 65%),
+      linear-gradient(180deg, rgba(8, 20, 24, 0.55) 0%, rgba(8, 20, 24, 0.88) 100%),
+      url('Images/hero-glen.jpeg?v=3');
+    background-size: cover, cover, cover, cover, cover;
+    background-position: center, center, center, center, center 62%;
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    0%   { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; filter: brightness(1); }
+    50%  { background-position: 4% 6%, -3% 4%, 2% -4%, 0% 0%; filter: brightness(1.06); }
+    100% { background-position: -3% -2%, 5% -3%, -2% 5%, 0% 0%; filter: brightness(0.98); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mist-field { animation: none; }
+    * { scroll-behavior: auto !important; animation-duration: 0.01ms !important; }
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 1.25rem clamp(1.25rem, 5vw, 3rem) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hero-logo {
+    display: block;
+    width: 130px;
+    max-width: 40vw;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 1.25rem;
+    filter: drop-shadow(0 4px 20px rgba(0,0,0,0.35));
+  }
+
+  .logo-mark span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+  }
+
+  .mark {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem clamp(1.25rem, 5vw, 3rem) 3rem;
+  }
+
+  .hero {
+    max-width: 640px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 1.75rem;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 6.5vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.4rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--mist-soft);
+    filter: brightness(1.6);
+  }
+
+  .sub {
+    font-size: clamp(1.02rem, 2.2vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--parchment-dim);
+    font-weight: 300;
+    margin: 0 auto 2.75rem;
+    max-width: 480px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  input[type="email"],
+  input[type="text"] {
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
+    display: block;
+    background: transparent;
+    border: 1px solid rgba(232, 225, 211, 0.35);
+    border-radius: 2px;
+    padding: 0.75rem 0.9rem;
+    color: var(--parchment);
+    font-family: 'Spectral', serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s ease;
+  }
+
+  select {
+    flex: 1 1 0;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
+    background: var(--loch-deep);
+    border: 1px solid rgba(232, 225, 211, 0.35);
+    border-radius: 2px;
+    padding: 0.7rem 0.6rem;
+    color: var(--parchment);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    outline: none;
+    transition: border-color 0.25s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%), linear-gradient(135deg, var(--gold) 50%, transparent 50%);
+    background-position: calc(100% - 14px) center, calc(100% - 9px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  #country {
+    flex: none;
+  }
+
+  select:focus-visible,
+  input[type="email"]:focus-visible,
+  input[type="text"]:focus-visible {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+  }
+
+  select option {
+    background: var(--loch-deep);
+    color: var(--parchment);
+  }
+
+  .consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    line-height: 1.5;
+    color: var(--parchment-dim);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .consent-label input[type="checkbox"] {
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+    accent-color: var(--gold);
+  }
+
+  input[type="email"]::placeholder,
+  input[type="text"]::placeholder { color: var(--parchment-dim); opacity: 0.7; }
+
+  .hidden-field {
+    display: none !important;
+  }
+
+  button {
+    width: 100%;
+    background: var(--gold);
+    color: var(--loch-deep);
+    border: none;
+    border-radius: 2px;
+    padding: 0.8rem 1.4rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
+  }
+
+  button:hover { background: #ddb539; }
+  button:active { transform: translateY(1px); }
+
+  button:focus-visible {
+    outline: 2px solid var(--parchment);
+    outline-offset: 3px;
+  }
+
+  .status {
+    margin-top: 1.1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    min-height: 1.2em;
+    color: var(--mist-soft);
+    filter: brightness(1.6);
+  }
+
+  .season {
+    margin-top: 3rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+  }
+
+  .gallery {
+    position: relative;
+    z-index: 1;
+    padding: 0 clamp(1.25rem, 5vw, 3rem) 4rem;
+  }
+
+  .gallery-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--parchment-dim);
+    text-align: center;
+    margin: 0 0 1.5rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.92) brightness(0.95);
+    transition: transform 0.6s ease, filter 0.6s ease;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.04);
+    filter: saturate(1) brightness(1);
+  }
+
+  .gallery-item figcaption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 0.9rem 0.9rem 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    color: var(--parchment);
+    background: linear-gradient(0deg, rgba(8,20,24,0.85) 0%, transparent 100%);
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid { grid-template-columns: 1fr; gap: 0.85rem; }
+    .gallery-item { aspect-ratio: 16 / 10; }
+  }
+
+  footer {
+    padding: 1.75rem clamp(1.25rem, 5vw, 3rem) 2.25rem;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: rgba(199, 191, 174, 0.55);
+  }
+
+  @media (max-width: 380px) {
+    .field-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="mist-field" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header>
+    <span class="logo-mark">
+      <span>Whispering Loch</span>
+    </span>
+    <span class="mark">Scotland</span>
+  </header>
+
+  <main>
+    <div class="hero">
+      <img class="hero-logo" src="Images/logo.jpeg?v=3" alt="The Whispering Loch — luxury book retreat">
+      <p class="eyebrow">A book retreat for women</p>
+      <h1>Five days in the Highlands, <em>with a book in hand.</em></h1>
+      <p class="sub">
+        A small, chef-catered retreat in Scotland — reading circles, loch hikes and excursions, and a house full of women who understand why both matter.
+      </p>
+
+      <form id="interest-form" novalidate>
+        <label for="name" class="visually-hidden" style="position:absolute;left:-9999px;">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name">
+
+        <label for="email" class="visually-hidden" style="position:absolute;left:-9999px;">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+        <label for="country" class="visually-hidden" style="position:absolute;left:-9999px;">Country</label>
+        <select id="country" name="country">
+          <option value="" disabled selected>Country</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="United States">United States</option>
+          <option value="Canada">Canada</option>
+          <option value="Ireland">Ireland</option>
+          <option value="Australia">Australia</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="France">France</option>
+          <option value="Germany">Germany</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Spain">Spain</option>
+          <option value="Italy">Italy</option>
+          <option value="Portugal">Portugal</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Norway">Norway</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Finland">Finland</option>
+          <option value="Austria">Austria</option>
+          <option value="Poland">Poland</option>
+          <option value="Czech Republic">Czech Republic</option>
+          <option value="Greece">Greece</option>
+          <option value="United Arab Emirates">United Arab Emirates</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Hong Kong">Hong Kong</option>
+          <option value="Japan">Japan</option>
+          <option value="South Africa">South Africa</option>
+          <option value="other">Other</option>
+        </select>
+        <input type="text" id="country-other" name="country-other" placeholder="Your country" class="hidden-field">
+
+        <label for="group-size" class="visually-hidden" style="position:absolute;left:-9999px;">Number of people interested</label>
+        <select id="group-size" name="group-size">
+          <option value="" disabled selected>People interested (inc. you)</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>
+
+        <div class="field-row">
+          <label for="season-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Season preference</label>
+          <select id="season-pref" name="season-pref" required>
+            <option value="" disabled selected>Preferred season</option>
+            <option value="autumn-2026">Autumn 2026 (Oct/Nov)</option>
+            <option value="spring-2027">Spring 2027</option>
+            <option value="summer-2027">Summer 2027</option>
+            <option value="flexible">Flexible / any</option>
+          </select>
+
+          <label for="genre-pref" class="visually-hidden" style="position:absolute;left:-9999px;">Favourite genre</label>
+          <select id="genre-pref" name="genre-pref" required>
+            <option value="" disabled selected>Favourite genre</option>
+            <option value="fantasy-romance">Fantasy &amp; romance</option>
+            <option value="literary">Literary fiction</option>
+            <option value="gothic-mystery">Gothic &amp; mystery</option>
+            <option value="memoir">Memoir &amp; nonfiction</option>
+            <option value="mixed">Mixed / no preference</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <input type="text" id="genre-other" name="genre-other" placeholder="Tell us your genre" class="hidden-field">
+
+        <label class="consent-label">
+          <input type="checkbox" id="consent" name="consent" required>
+          <span>I'd like to receive updates about Whispering Loch by email.</span>
+        </label>
+
+        <button type="submit">Register interest</button>
+      </form>
+      <p class="status" id="form-status" role="status" aria-live="polite"></p>
+
+      <p class="season">Autumn 2026 · Spring &amp; Summer 2027 · Scotland</p>
+    </div>
+  </main>
+
+  <section class="gallery" aria-label="Scotland, in brief">
+    <p class="gallery-label">Scotland, in brief</p>
+    <div class="gallery-grid">
+      <figure class="gallery-item">
+        <img src="Images/gallery-castle.jpeg?v=3" alt="A stone castle on the water at dusk, surrounded by highland mountains" loading="lazy">
+        <figcaption>Highland strongholds</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="Images/hero-glen.jpeg?v=3" alt="Mist rolling through a heather-covered glen at sunrise" loading="lazy">
+        <figcaption>Glens at first light</figcaption>
+      </figure>
+      <figure class="gallery-item">
+        <img src="Images/gallery-viaduct.jpeg?v=3" alt="A steam train crossing a stone viaduct through green highland hills" loading="lazy">
+        <figcaption>Journeys through the hills</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2026 Whispering Loch · whisperingloch.com
+  </footer>
+</div>
+
+<script>
+  const form = document.getElementById('interest-form');
+  const status = document.getElementById('form-status');
+  const countrySelect = document.getElementById('country');
+  const countryOther = document.getElementById('country-other');
+  const genreSelect = document.getElementById('genre-pref');
+  const genreOther = document.getElementById('genre-other');
+
+  countrySelect.addEventListener('change', function () {
+    countryOther.classList.toggle('hidden-field', this.value !== 'other');
+  });
+  genreSelect.addEventListener('change', function () {
+    genreOther.classList.toggle('hidden-field', this.value !== 'other');
+  });
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const country = countrySelect.value === 'other'
+      ? countryOther.value.trim()
+      : countrySelect.value;
+    const groupSize = document.getElementById('group-size').value;
+    const season = document.getElementById('season-pref').value;
+    const genre = genreSelect.value === 'other'
+      ? genreOther.value.trim()
+      : genreSelect.value;
+    const consent = document.getElementById('consent').checked;
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!validEmail) {
+      status.textContent = 'Please enter a valid email address.';
+      return;
+    }
+    if (!season || !genre) {
+      status.textContent = 'Please choose a season and genre preference.';
+      return;
+    }
+    if (!consent) {
+      status.textContent = 'Please confirm you\'re happy to be contacted.';
+      return;
+    }
+
+    status.textContent = 'Sending…';
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, country, groupSize, season, genre, consent })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        status.textContent = data.error || 'Something went wrong. Please try again.';
+        return;
+      }
+      status.textContent = 'Thank you — we\'ll be in touch before booking opens.';
+      form.reset();
+      countryOther.classList.add('hidden-field');
+      genreOther.classList.add('hidden-field');
+    } catch (err) {
+      status.textContent = 'Could not connect. Please try again.';
+    }
+  });
+</script>
+
+</body>
+</html>
