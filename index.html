@@ -246,7 +246,9 @@
 
 const CARERS = [ {id:1,name:"Sarah"}, {id:2,name:"Kirsty"}, {id:3,name:"Jane"} ];
 const DAILY_WINE_LIMIT = 1;
-const DAILY_CAN_LIMIT = 4;
+const CAN_LIMIT_WITH_WINE = 4;
+const CAN_LIMIT_WITHOUT_WINE = 8;
+function canLimitFor(dayWine) { return dayWine > 0 ? CAN_LIMIT_WITH_WINE : CAN_LIMIT_WITHOUT_WINE; }
 
 const $ = (id) => document.getElementById(id);
 const show = (el) => el.style.display = "";
@@ -412,9 +414,10 @@ function renderAlcoholSection() {
     const totalWine = already.wine + (wineGiven ? 1 : 0);
     const totalCans = already.cans + cans;
     const overWine = totalWine > DAILY_WINE_LIMIT;
-    const overCans = totalCans > DAILY_CAN_LIMIT;
+    const dailyCanLimit = canLimitFor(totalWine);
+    const overCans = totalCans > dailyCanLimit;
     $("alcohol-warning").innerHTML = (overWine || overCans)
-      ? `<div class="banner flag">⚠ ${overWine ? `This would take today's wine to ${totalWine} bottles — the daily limit is ${DAILY_WINE_LIMIT}. ` : ""}${overCans ? `This would take today's lager to ${totalCans} cans — the daily limit is ${DAILY_CAN_LIMIT}. ` : ""}Please double-check with the other carer.</div>`
+      ? `<div class="banner flag">⚠ ${overWine ? `This would take today's wine to ${totalWine} bottles — the daily limit is ${DAILY_WINE_LIMIT}. ` : ""}${overCans ? `This would take today's lager to ${totalCans} cans — the limit is ${dailyCanLimit} cans${totalWine > 0 ? " once wine's been given" : " (up to 8 if no wine's given today)"}. ` : ""}Please double-check with the other carer.</div>`
       : "";
   }
   $("cb-wine").onchange = recalc;
@@ -454,7 +457,7 @@ const MOCK_WEEK = [
       activities:"GP visit went fine, Tom napped after lunch.", wine:0, cans:3 },
     { label:"Visit 2 · Evening", carer:"Sarah", inT:"17:58", outT:"19:20", status:"complete", flagged:false,
       meds:"Evening meds ✓ · New pack received", meal:"Shepherd's pie", outing:"—", mood:"Calm",
-      activities:"Quiet evening in, watched TV.", wine:0, cans:2 },
+      activities:"Quiet evening in, watched TV.", wine:1, cans:2 },
   ]},
   { day:"Wednesday", date:"Aug 5", visits: [
     { label:"Visit 1 · Morning / Lunch", carer:"Kirsty", inT:"11:15", outT:null, status:"missed_checkout", flagged:false,
@@ -482,7 +485,7 @@ function renderFamily() {
       if (v.status === "missed_checkout") attentionItems.push(`${d.day} ${v.label.split(" · ")[1]}: checked in but never checked out`);
     });
     if (dayWine > DAILY_WINE_LIMIT) attentionItems.push(`${d.day}: wine total over the daily limit (${dayWine} bottles)`);
-    if (dayCans > DAILY_CAN_LIMIT) attentionItems.push(`${d.day}: lager total over the daily limit (${dayCans} cans)`);
+    if (dayCans > canLimitFor(dayWine)) attentionItems.push(`${d.day}: lager total (${dayCans} cans) over the limit of ${canLimitFor(dayWine)}${dayWine > 0 ? " for a day wine was given" : ""}`);
   });
 
   $("attention-banner").innerHTML = attentionItems.length === 0
@@ -509,12 +512,12 @@ function renderFamily() {
   MOCK_WEEK.forEach(d => {
     const dayWine = d.visits.reduce((s,v)=>s+(v.wine||0),0);
     const dayCans = d.visits.reduce((s,v)=>s+(v.cans||0),0);
-    const over = dayWine > DAILY_WINE_LIMIT || dayCans > DAILY_CAN_LIMIT;
+    const over = dayWine > DAILY_WINE_LIMIT || dayCans > canLimitFor(dayWine);
 
     const dayEl = document.createElement("div");
     dayEl.className = "logbook-day";
     dayEl.innerHTML = `<div class="day-heading">${d.day}<span class="d mono">${d.date}</span></div>
-      <div class="day-alcohol${over ? " over" : ""}">Alcohol today: ${dayWine>0?`${dayWine} bottle${dayWine>1?"s":""} wine, `:""}${dayCans} can${dayCans===1?"":"s"} lager${over?" — over the daily limit":""}</div>`;
+      <div class="day-alcohol${over ? " over" : ""}">Alcohol today: ${dayWine>0?`${dayWine} bottle${dayWine>1?"s":""} wine, `:""}${dayCans} can${dayCans===1?"":"s"} lager${over?` — over the limit (${canLimitFor(dayWine)} cans${dayWine>0?" once wine's given":""})`:""}</div>`;
 
     d.visits.forEach(v => {
       const entry = document.createElement("div");
