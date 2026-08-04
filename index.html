@@ -115,9 +115,25 @@
     </div>
     <h1>Which visit is this?</h1>
     <p class="muted" style="margin-bottom:16px;" id="vs-date"></p>
-    <div style="display:flex; flex-direction:column; gap:10px;">
+    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
       <button class="chip full" data-visit="visit1">Visit 1 · Morning / Lunch</button>
       <button class="chip full" data-visit="visit2">Visit 2 · Evening</button>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <p class="eyebrow" style="margin:0;">Coming up</p>
+      <button class="link-btn" id="carer-add-task-toggle" style="color:var(--brass-dark);">+ Add</button>
+    </div>
+    <p class="eyebrow" style="margin-bottom:6px;">Today</p>
+    <div id="carer-today-tasks" style="margin-bottom:14px;"></div>
+    <p class="eyebrow" style="margin-bottom:6px;">Tomorrow</p>
+    <div id="carer-tomorrow-tasks"></div>
+    <div id="carer-add-task-form" class="card" style="display:none;">
+      <label style="display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;">Date</label>
+      <input type="date" id="carer-task-date" style="margin-bottom:10px;" />
+      <input type="text" id="carer-task-title" placeholder="e.g. Dentist, 10am" style="margin-bottom:10px;" />
+      <textarea id="carer-task-notes" placeholder="Any notes (optional)" style="margin-bottom:10px;"></textarea>
+      <button class="btn btn-brass" id="carer-task-add">Add</button>
     </div>
   </div>
 
@@ -221,19 +237,36 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="reminder-modal">
+  <div class="modal">
+    <h2 style="font-size:18px;">Reminder for today</h2>
+    <div id="reminder-modal-list" style="margin-bottom:16px;"></div>
+    <button class="btn btn-primary" id="reminder-got-it">Got it</button>
+  </div>
+</div>
+
 <!-- ============================= FAMILY PHONE ============================= -->
 <div class="phone" id="phone-family" style="display:none;">
-  <div class="screen active">
+  <div class="screen active" id="fv-login">
+    <p class="eyebrow">Tom's Care Log</p>
+    <h1 style="margin-bottom:20px;">Enter the family PIN</h1>
+    <div class="pin-dots" id="fv-pin-dots"></div>
+    <div class="pin-grid" id="fv-pin-grid"></div>
+    <p id="fv-pin-error" style="color:var(--flagged); font-size:14px; text-align:center; margin-top:14px;"></p>
+  </div>
+
+  <div class="screen" id="fv-dashboard">
     <div class="top-bar">
       <div>
         <p class="eyebrow">Tom's Care Log</p>
         <h1>This week</h1>
       </div>
-      <button class="link-btn">Log out</button>
+      <button class="link-btn" id="fv-logout">Log out</button>
     </div>
 
     <div style="display:flex; gap:8px; margin-bottom:18px;">
       <button id="fv-tab-log" class="tab-btn active" style="flex:1;">Log</button>
+      <button id="fv-tab-tasks" class="tab-btn" style="flex:1;">Tasks</button>
       <button id="fv-tab-hours" class="tab-btn" style="flex:1;">📊 Hours</button>
     </div>
 
@@ -249,6 +282,19 @@
     <div class="checklist-strip" id="family-checklist"></div>
 
     <div id="family-logbook"></div>
+    </div>
+
+    <div id="fv-panel-tasks" style="display:none;">
+      <p class="muted" style="margin-bottom:14px;">Appointments and things to do — either of you can add one.</p>
+      <button class="btn btn-outline" id="fv-add-task-toggle" style="border-color:var(--brass); color:var(--brass-dark); margin-bottom:14px;">+ Add an appointment or to-do</button>
+      <div id="fv-add-task-form" class="card" style="display:none;">
+        <label style="display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;">Date</label>
+        <input type="date" id="fv-task-date" style="margin-bottom:10px;" />
+        <input type="text" id="fv-task-title" placeholder="e.g. Dentist, 10am" style="margin-bottom:10px;" />
+        <textarea id="fv-task-notes" placeholder="Any notes (optional)" style="margin-bottom:10px;"></textarea>
+        <button class="btn btn-brass" id="fv-task-add">Add</button>
+      </div>
+      <div id="fv-tasks-list"></div>
     </div>
 
     <div id="fv-panel-hours" style="display:none;">
@@ -286,6 +332,25 @@
 // ---------------------------------------------------------------------------
 
 const CARERS = [ {id:1,name:"Sarah"}, {id:2,name:"Kirsty"}, {id:3,name:"Jane"} ];
+
+// Shared calendar of appointments / to-dos — added by either family or
+// carers. A plain global array here since both "phones" in this preview
+// read/write the same in-memory data, mirroring one shared table in the
+// real app.
+let TASKS = [
+  { id: 1, date: "2026-08-04", title: "GP appointment, 2:00pm", notes: "Routine check-up — bring blood pressure monitor.", addedBy: "family", addedByName: "Family" },
+  { id: 2, date: "2026-08-06", title: "Chiropodist, 11:30am", notes: "", addedBy: "family", addedByName: "Family" },
+  { id: 3, date: "2026-08-05", title: "Running low on porridge oats", notes: "Could do with picking some up on the next shop.", addedBy: "carer", addedByName: "Kirsty" },
+];
+function todaysTasksList() {
+  const todayISO = new Date().toISOString().slice(0,10);
+  return TASKS.filter(t => t.date === todayISO);
+}
+function tomorrowsTasksList() {
+  const tomorrowISO = new Date(Date.now() + 86400000).toISOString().slice(0,10);
+  return TASKS.filter(t => t.date === tomorrowISO);
+}
+
 const DAILY_WINE_LIMIT = 1;
 const CAN_LIMIT_WITH_WINE = 4;
 const CAN_LIMIT_WITHOUT_WINE = 8;
@@ -362,10 +427,68 @@ $("pin-back").onclick = () => switchScreen("c-pick");
 function goToVisitSelect() {
   $("vs-name").textContent = state.carer.name;
   $("vs-date").textContent = new Date().toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"});
+  renderCarerTodayTasks();
   switchScreen("c-visitselect");
 }
 $("vs-logout").onclick = () => { state.carer = null; switchScreen("c-pick"); };
 $("v-logout").onclick = () => { state.carer = null; switchScreen("c-pick"); };
+
+function renderCarerTodayTasks() {
+  renderTaskListInto("carer-today-tasks", todaysTasksList());
+  renderTaskListInto("carer-tomorrow-tasks", tomorrowsTasksList());
+}
+
+function renderTaskListInto(elId, items) {
+  const box = $(elId);
+  if (items.length === 0) {
+    box.innerHTML = `<p class="muted" style="font-size:14px;">Nothing added.</p>`;
+    return;
+  }
+  box.innerHTML = items.map(t => `
+    <div class="card" style="margin-bottom:8px; padding:12px 14px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+        <div>
+          <div style="font-weight:500; font-size:14px;">${t.title}</div>
+          ${t.notes ? `<div class="muted" style="font-size:12px; margin-top:2px;">${t.notes}</div>` : ""}
+          <div class="muted" style="font-size:12px; margin-top:4px;">Added by ${t.addedByName}</div>
+        </div>
+        ${t.addedBy === "carer" ? `<button class="link-btn" data-remove-task="${t.id}" style="color:var(--flagged); flex-shrink:0;">Remove</button>` : ""}
+      </div>
+    </div>
+  `).join("");
+  box.querySelectorAll("[data-remove-task]").forEach(btn => {
+    btn.onclick = () => {
+      const id = Number(btn.dataset.removeTask);
+      // Carers can only remove entries they added themselves — never family entries.
+      TASKS = TASKS.filter(t => !(t.id === id && t.addedBy === "carer"));
+      renderCarerTodayTasks();
+    };
+  });
+}
+
+$("carer-add-task-toggle").onclick = () => {
+  const form = $("carer-add-task-form");
+  const showing = form.style.display !== "none";
+  form.style.display = showing ? "none" : "";
+  $("carer-add-task-toggle").textContent = showing ? "+ Add" : "Cancel";
+  if (!showing) $("carer-task-date").value = new Date().toISOString().slice(0,10);
+};
+$("carer-task-add").onclick = () => {
+  const title = $("carer-task-title").value.trim();
+  if (!title) return;
+  TASKS.push({
+    id: Date.now(),
+    date: $("carer-task-date").value || new Date().toISOString().slice(0,10),
+    title,
+    notes: $("carer-task-notes").value.trim(),
+    addedBy: "carer",
+    addedByName: state.carer.name,
+  });
+  $("carer-task-title").value = ""; $("carer-task-notes").value = "";
+  $("carer-add-task-form").style.display = "none";
+  $("carer-add-task-toggle").textContent = "+ Add";
+  renderCarerTodayTasks();
+};
 
 function renderChores() {
   const box = $("chores-list");
@@ -436,7 +559,22 @@ function doCheckedIn() {
     ? `<div class="banner flag">📍 Location flagged at check-in (210m from home)</div>` : "";
   renderChores();
   renderAlcoholSection();
+  maybeShowReminder();
 }
+
+function maybeShowReminder() {
+  const items = todaysTasksList();
+  if (items.length === 0) return;
+  $("reminder-modal-list").innerHTML = items.map(t => `
+    <div class="card" style="margin-bottom:8px; padding:12px 14px;">
+      <div style="font-weight:500; font-size:14px;">${t.title}</div>
+      ${t.notes ? `<div class="muted" style="font-size:12px; margin-top:2px;">${t.notes}</div>` : ""}
+    </div>
+  `).join("");
+  $("reminder-modal").classList.add("active");
+}
+$("reminder-got-it").onclick = () => { $("reminder-modal").classList.remove("active"); };
+
 function doCheckedOut() {
   state.checkedOut = true;
   hide($("pane-form")); show($("pane-done"));
@@ -479,6 +617,55 @@ document.querySelectorAll("#mood-chips .chip").forEach(chip => {
     chip.classList.add("selected");
   };
 });
+
+// ================= FAMILY LOGIN =================
+
+let fvPin = "";
+
+function renderFvPinDots() {
+  const box = $("fv-pin-dots");
+  box.innerHTML = "";
+  for (let i=0;i<4;i++) {
+    const d = document.createElement("span");
+    d.className = "dot" + (i < fvPin.length ? " filled" : "");
+    box.appendChild(d);
+  }
+}
+function buildFvPinPad() {
+  const grid = $("fv-pin-grid");
+  grid.innerHTML = "";
+  ["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(k => {
+    const btn = document.createElement("button");
+    if (k === "") { btn.style.visibility = "hidden"; }
+    else { btn.textContent = k; btn.onclick = () => pressFvPin(k); }
+    grid.appendChild(btn);
+  });
+}
+buildFvPinPad();
+renderFvPinDots();
+
+function pressFvPin(k) {
+  $("fv-pin-error").textContent = "";
+  if (k === "⌫") { fvPin = fvPin.slice(0,-1); renderFvPinDots(); return; }
+  if (fvPin.length >= 4) return;
+  fvPin += k;
+  renderFvPinDots();
+  if (fvPin.length === 4) {
+    // Mock only — any 4 digits "works" here. The real app checks it against
+    // the family passcode set during first-time setup.
+    setTimeout(() => {
+      $("fv-login").classList.remove("active");
+      $("fv-dashboard").classList.add("active");
+    }, 150);
+  }
+}
+
+$("fv-logout").onclick = () => {
+  $("fv-dashboard").classList.remove("active");
+  $("fv-login").classList.add("active");
+  fvPin = "";
+  renderFvPinDots();
+};
 
 // ================= FAMILY VIEW (mock data) =================
 
@@ -595,6 +782,70 @@ function renderFamily() {
 }
 renderFamily();
 
+// ---------------- Tasks panel (family) ----------------
+
+function renderFvTasks() {
+  const sorted = [...TASKS].sort((a,b) => a.date.localeCompare(b.date));
+  const byDate = {};
+  sorted.forEach(t => { (byDate[t.date] ||= []).push(t); });
+
+  const box = $("fv-tasks-list");
+  const dates = Object.keys(byDate);
+  if (dates.length === 0) {
+    box.innerHTML = `<p class="muted">Nothing on the calendar yet.</p>`;
+    return;
+  }
+  box.innerHTML = dates.map(date => {
+    const dayLabel = new Date(date + "T00:00:00Z").toLocaleDateString(undefined, {weekday:"long", month:"short", day:"numeric", timeZone:"UTC"});
+    const items = byDate[date].map(t => `
+      <div class="card" style="margin-bottom:8px; padding:12px 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div>
+            <div style="font-weight:500; font-size:14px;">${t.title}</div>
+            ${t.notes ? `<div class="muted" style="font-size:12px; margin-top:2px;">${t.notes}</div>` : ""}
+            <div class="muted" style="font-size:12px; margin-top:4px;">Added by ${t.addedByName}${t.addedBy === "carer" ? " (carer)" : ""}</div>
+          </div>
+          <button class="link-btn" data-fv-delete="${t.id}" style="color:var(--flagged); flex-shrink:0;">Delete</button>
+        </div>
+      </div>
+    `).join("");
+    return `<p class="eyebrow" style="margin-bottom:8px;">${dayLabel}</p>${items}`;
+  }).join("");
+
+  box.querySelectorAll("[data-fv-delete]").forEach(btn => {
+    btn.onclick = () => {
+      // Family can remove any entry, theirs or a carer's.
+      const id = Number(btn.dataset.fvDelete);
+      TASKS = TASKS.filter(t => t.id !== id);
+      renderFvTasks();
+    };
+  });
+}
+
+$("fv-add-task-toggle").onclick = () => {
+  const form = $("fv-add-task-form");
+  const showing = form.style.display !== "none";
+  form.style.display = showing ? "none" : "";
+  $("fv-add-task-toggle").textContent = showing ? "+ Add an appointment or to-do" : "Cancel";
+  if (!showing) $("fv-task-date").value = new Date().toISOString().slice(0,10);
+};
+$("fv-task-add").onclick = () => {
+  const title = $("fv-task-title").value.trim();
+  if (!title) return;
+  TASKS.push({
+    id: Date.now(),
+    date: $("fv-task-date").value || new Date().toISOString().slice(0,10),
+    title,
+    notes: $("fv-task-notes").value.trim(),
+    addedBy: "family",
+    addedByName: "Family",
+  });
+  $("fv-task-title").value = ""; $("fv-task-notes").value = "";
+  $("fv-add-task-form").style.display = "none";
+  $("fv-add-task-toggle").textContent = "+ Add an appointment or to-do";
+  renderFvTasks();
+};
+
 // ---------------- Hours report ----------------
 
 const HOURS_MOCK = {
@@ -635,15 +886,28 @@ let customHoursResult = null;
 
 $("fv-tab-log").onclick = () => {
   $("fv-tab-log").classList.add("active");
+  $("fv-tab-tasks").classList.remove("active");
   $("fv-tab-hours").classList.remove("active");
   $("fv-panel-log").style.display = "";
+  $("fv-panel-tasks").style.display = "none";
   $("fv-panel-hours").style.display = "none";
+};
+$("fv-tab-tasks").onclick = () => {
+  $("fv-tab-tasks").classList.add("active");
+  $("fv-tab-log").classList.remove("active");
+  $("fv-tab-hours").classList.remove("active");
+  $("fv-panel-tasks").style.display = "";
+  $("fv-panel-log").style.display = "none";
+  $("fv-panel-hours").style.display = "none";
+  renderFvTasks();
 };
 $("fv-tab-hours").onclick = () => {
   $("fv-tab-hours").classList.add("active");
   $("fv-tab-log").classList.remove("active");
+  $("fv-tab-tasks").classList.remove("active");
   $("fv-panel-hours").style.display = "";
   $("fv-panel-log").style.display = "none";
+  $("fv-panel-tasks").style.display = "none";
   renderHours();
 };
 
