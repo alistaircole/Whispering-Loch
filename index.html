@@ -115,12 +115,10 @@
     </div>
     <h1>Which visit is this?</h1>
     <p class="muted" style="margin-bottom:16px;" id="vs-date"></p>
-    <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+    <div style="display:flex; flex-direction:column; gap:10px;">
       <button class="chip full" data-visit="visit1">Visit 1 · Morning / Lunch</button>
       <button class="chip full" data-visit="visit2">Visit 2 · Evening</button>
     </div>
-    <p class="eyebrow" style="margin-bottom:8px;">This week's chores</p>
-    <div id="chores-list"></div>
   </div>
 
   <div class="screen" id="c-visit">
@@ -139,6 +137,11 @@
     <div id="pane-form" style="display:none;">
       <div class="mono muted" id="checkin-time" style="margin-bottom:10px;"></div>
       <div id="checkin-flag-banner"></div>
+
+      <div class="card">
+        <h2 style="font-size:17px;">This week's chores</h2>
+        <div id="chores-list"></div>
+      </div>
 
       <div class="card">
         <h2 style="font-size:17px;">Meds &amp; Personal Care</h2>
@@ -185,6 +188,12 @@
         <div id="alcohol-warning"></div>
       </div>
 
+      <div class="card">
+        <h2 style="font-size:17px;">Comments</h2>
+        <p class="muted" style="margin-bottom:10px; font-size:12px;">Anything else the family should know — flagged for them to read.</p>
+        <textarea id="comments-input" placeholder="e.g. Tom mentioned his knee's been sore today"></textarea>
+      </div>
+
       <div class="sticky-btn">
         <button class="btn btn-brass" id="btn-checkout">📍 Check Out</button>
       </div>
@@ -223,6 +232,12 @@
       <button class="link-btn">Log out</button>
     </div>
 
+    <div style="display:flex; gap:8px; margin-bottom:18px;">
+      <button id="fv-tab-log" class="tab-btn active" style="flex:1;">Log</button>
+      <button id="fv-tab-hours" class="tab-btn" style="flex:1;">📊 Hours</button>
+    </div>
+
+    <div id="fv-panel-log">
     <div class="week-nav">
       <button>&larr; Prev</button>
       <span class="mono">Aug 3 – Aug 9</span>
@@ -234,6 +249,32 @@
     <div class="checklist-strip" id="family-checklist"></div>
 
     <div id="family-logbook"></div>
+    </div>
+
+    <div id="fv-panel-hours" style="display:none;">
+      <div class="chip-row" id="hours-period-chips" style="margin-bottom:14px;">
+        <button class="chip selected" data-period="weekly">Weekly</button>
+        <button class="chip" data-period="fortnightly">Fortnightly</button>
+        <button class="chip" data-period="monthly">Monthly</button>
+        <button class="chip" data-period="custom">Custom</button>
+      </div>
+
+      <div id="hours-custom-inputs" class="card" style="display:none;">
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
+          <div style="flex:1;">
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;">From</label>
+            <input type="date" id="hours-from" />
+          </div>
+          <div style="flex:1;">
+            <label style="display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;">To</label>
+            <input type="date" id="hours-to" />
+          </div>
+        </div>
+        <button class="btn btn-outline" id="hours-calc">Calculate</button>
+      </div>
+
+      <div id="hours-result"></div>
+    </div>
   </div>
 </div>
 
@@ -321,7 +362,6 @@ $("pin-back").onclick = () => switchScreen("c-pick");
 function goToVisitSelect() {
   $("vs-name").textContent = state.carer.name;
   $("vs-date").textContent = new Date().toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"});
-  renderChores();
   switchScreen("c-visitselect");
 }
 $("vs-logout").onclick = () => { state.carer = null; switchScreen("c-pick"); };
@@ -394,6 +434,7 @@ function doCheckedIn() {
   $("checkin-time").textContent = "Checked in " + fmtNow();
   $("checkin-flag-banner").innerHTML = state.flaggedIn
     ? `<div class="banner flag">📍 Location flagged at check-in (210m from home)</div>` : "";
+  renderChores();
   renderAlcoholSection();
 }
 function doCheckedOut() {
@@ -445,7 +486,8 @@ const MOCK_WEEK = [
   { day:"Monday", date:"Aug 3", visits: [
     { label:"Visit 1 · Morning / Lunch", carer:"Sarah", inT:"11:05", outT:"12:40", status:"complete", flagged:false,
       meds:"Morning meds ✓", meal:"Porridge and tea", outing:"—", mood:"Calm",
-      activities:"Read the paper together, short walk in the garden.", wine:0, cans:2 },
+      activities:"Read the paper together, short walk in the garden.", wine:0, cans:2,
+      comments:"Tom mentioned his knee's been sore today, might be worth mentioning to the GP." },
     { label:"Visit 2 · Evening", carer:"Jane", inT:"18:02", outT:"19:15", status:"complete", flagged:false,
       meds:"Evening meds ✓", meal:"Fish and mash", outing:"—", mood:"Bright",
       activities:"Watched the football, Tom was chatty tonight.", wine:1, cans:0 },
@@ -483,6 +525,7 @@ function renderFamily() {
     d.visits.forEach(v => {
       if (v.flagged) attentionItems.push(`${d.day} ${v.label.split(" · ")[1]}: location flagged`);
       if (v.status === "missed_checkout") attentionItems.push(`${d.day} ${v.label.split(" · ")[1]}: checked in but never checked out`);
+      if (v.comments) attentionItems.push(`${d.day} ${v.label.split(" · ")[1]}: carer left a note`);
     });
     if (dayWine > DAILY_WINE_LIMIT) attentionItems.push(`${d.day}: wine total over the daily limit (${dayWine} bottles)`);
     if (dayCans > canLimitFor(dayWine)) attentionItems.push(`${d.day}: lager total (${dayCans} cans) over the limit of ${canLimitFor(dayWine)}${dayWine > 0 ? " for a day wine was given" : ""}`);
@@ -538,6 +581,7 @@ function renderFamily() {
         </div>
         ${v.flagged ? `<div class="banner flag">📍 ${v.flagReason}</div>` : ""}
         ${v.status === "missed_checkout" ? `<div class="banner flag">⏱ Checked in but never checked out — worth confirming what happened.</div>` : ""}
+        ${v.comments ? `<div class="banner" style="background:#f3e9d8; color:var(--brass-dark);">📝 <span><strong>Note from ${v.carer}:</strong> ${v.comments}</span></div>` : ""}
       `;
       // colored dot via ::before can't take custom prop easily inline, so add a small marker instead
       const marker = document.createElement("div");
@@ -550,6 +594,113 @@ function renderFamily() {
   });
 }
 renderFamily();
+
+// ---------------- Hours report ----------------
+
+const HOURS_MOCK = {
+  weekly: {
+    label: "This week · Aug 3–9",
+    total: 24.5,
+    expected: "Contracted 21–28 hrs/week",
+    byCarer: [
+      { name: "Sarah", hours: 9.5, visits: 4 },
+      { name: "Kirsty", hours: 8, visits: 3 },
+      { name: "Jane", hours: 7, visits: 3 },
+    ],
+  },
+  fortnightly: {
+    label: "Last 2 weeks · Jul 27–Aug 9",
+    total: 49,
+    expected: "Contracted 42–56 hrs/fortnight",
+    byCarer: [
+      { name: "Sarah", hours: 19, visits: 8 },
+      { name: "Kirsty", hours: 16, visits: 6 },
+      { name: "Jane", hours: 14, visits: 6 },
+    ],
+  },
+  monthly: {
+    label: "Last 30 days · Jul 5–Aug 3",
+    total: 104,
+    expected: "Contracted ~91–121 hrs/month",
+    byCarer: [
+      { name: "Sarah", hours: 41, visits: 17 },
+      { name: "Kirsty", hours: 35, visits: 14 },
+      { name: "Jane", hours: 28, visits: 12 },
+    ],
+  },
+};
+
+let hoursPeriod = "weekly";
+let customHoursResult = null;
+
+$("fv-tab-log").onclick = () => {
+  $("fv-tab-log").classList.add("active");
+  $("fv-tab-hours").classList.remove("active");
+  $("fv-panel-log").style.display = "";
+  $("fv-panel-hours").style.display = "none";
+};
+$("fv-tab-hours").onclick = () => {
+  $("fv-tab-hours").classList.add("active");
+  $("fv-tab-log").classList.remove("active");
+  $("fv-panel-hours").style.display = "";
+  $("fv-panel-log").style.display = "none";
+  renderHours();
+};
+
+document.querySelectorAll("#hours-period-chips [data-period]").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#hours-period-chips .chip").forEach(c => c.classList.remove("selected"));
+    btn.classList.add("selected");
+    hoursPeriod = btn.dataset.period;
+    $("hours-custom-inputs").style.display = hoursPeriod === "custom" ? "" : "none";
+    renderHours();
+  };
+});
+
+$("hours-calc").onclick = () => {
+  const from = $("hours-from").value;
+  const to = $("hours-to").value;
+  if (!from || !to) return;
+  const days = Math.max(1, Math.round((new Date(to) - new Date(from)) / 86400000) + 1);
+  const total = Math.round(days * 3.5 * 10) / 10;
+  customHoursResult = {
+    label: `${from} – ${to}`,
+    total,
+    byCarer: [
+      { name: "Sarah", hours: Math.round(total*0.4*10)/10, visits: Math.round(days*0.6) },
+      { name: "Kirsty", hours: Math.round(total*0.33*10)/10, visits: Math.round(days*0.5) },
+      { name: "Jane", hours: Math.round(total*0.27*10)/10, visits: Math.round(days*0.4) },
+    ],
+  };
+  renderHours();
+};
+
+function renderHours() {
+  const data = hoursPeriod === "custom" ? customHoursResult : HOURS_MOCK[hoursPeriod];
+  const box = $("hours-result");
+  if (!data) {
+    box.innerHTML = `<p class="muted">Pick a date range and tap Calculate to see hours logged.</p>`;
+    return;
+  }
+  box.innerHTML = `
+    <div class="card">
+      <p class="mono muted" style="font-size:12px; margin-bottom:4px;">${data.label}</p>
+      <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:4px;">
+        <span style="font-size:30px; font-weight:600; font-family: var(--font-display);">${data.total}</span>
+        <span class="muted" style="font-size:14px;">hours logged</span>
+      </div>
+      ${data.expected ? `<p class="muted" style="font-size:12px;">${data.expected}</p>` : ""}
+    </div>
+    <p class="eyebrow" style="margin-bottom:8px;">By carer</p>
+    ${data.byCarer.map(c => `
+      <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px; background:#fff;">
+        <span style="font-weight:500; font-size:14px;">${c.name}</span>
+        <span class="muted" style="font-size:14px;">${c.hours} hrs · ${c.visits} visits</span>
+      </div>
+    `).join("")}
+    <p class="muted" style="font-size:12px; margin-top:12px;">Based on actual check-in and check-out times — flagged or missed-checkout visits are footnoted, not silently dropped from the total.</p>
+  `;
+}
 </script>
 </body>
 </html>
